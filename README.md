@@ -1,20 +1,20 @@
 # Flask Hello World
 A simple application that displays "Hello, World!" on the homepage.
 
-#### Requirements
+#### 1. Requirements
 * Python 3.x
 * Flask
 
-#### Create a virtural environment
+#### 2. Create a virtural environment
 ```pip -m venv <env_name>```
 
-#### Activate the virtual environment 
+#### 3. Activate the virtual environment 
 ```.\venv\Scripts\activate (For Windows)```
 
-#### For installing dependencies
+#### 4. For installing dependencies
 ```pip install -r requirements.txt```
 
-#### Run the application
+#### 5. Run the application
 ```python app.py```
 
-#### Open a web browser and go to http://localhost:5000 to see the application in action.
+#### 6. Open a web browser and go to http://localhost:5000 to see the application in action.

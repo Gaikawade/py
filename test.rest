@@ -1,3 +1,13 @@
 @API_URL = http://localhost:5000
 
 {{API_URL}}
+
+###
+POST {{API_URL}}/register
+Content-Type: multipart/form-data
+
+{
+  "name": "mahesh",
+  "email": "mahesh@gmail.com",
+  "password": "password"
+}

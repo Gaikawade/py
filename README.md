@@ -4,6 +4,7 @@ A simple application that demonstrates how to connect to a MySQL database in a F
 #### 1. Requirements
 * Python 3.x
 * Flask
+* MySQL-Connector-Python
 
 #### 2. Create a virtural environment
 ```pip -m venv <env_name>```
@@ -12,11 +13,8 @@ A simple application that demonstrates how to connect to a MySQL database in a F
 ```.\venv\Scripts\activate (For Windows)```
 
 #### 4. For installing dependencies
-```pip install -r requirements.txt
-  Installed dependencies:
-  . Flask
-  . MySQL-Connector-Python
-```
+```pip install -r requirements.txt```
+
 
 #### 5. Run the application
 ```python app.py```

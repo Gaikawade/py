@@ -1,5 +1,5 @@
-# Flask Hello World
-A simple application that displays "Hello, World!" on the homepage.
+# Flask and MySQL connection
+A simple application that demonstrates how to connect to a MySQL database in a Flask application
 
 #### 1. Requirements
 * Python 3.x
@@ -12,9 +12,13 @@ A simple application that displays "Hello, World!" on the homepage.
 ```.\venv\Scripts\activate (For Windows)```
 
 #### 4. For installing dependencies
-```pip install -r requirements.txt```
+```pip install -r requirements.txt
+  Installed dependencies:
+  . Flask
+  . MySQL-Connector-Python
+```
 
 #### 5. Run the application
 ```python app.py```
 
-#### 6. Open a web browser and go to http://localhost:5000 to see the application in action.
+<!-- #### 6. Open a web browser and go to http://localhost:5000 to see the application in action. -->

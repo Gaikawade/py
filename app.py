@@ -1,28 +1,44 @@
-# Import Flask library from falsk directly
+# importing Flask library
 from flask import Flask
-# Creating an instance of Flask with name 'app'
-# "__name__" argument passed to the Flask class is used to determine the root path of the application
+# importing Connect and Error class from mysql-connector-python library 
+from mysql.connector import connect, Error
+
+# Creating and instance for Flask
 app = Flask(__name__)
 
-# Decorator / URL Endpoint
-# Used to define a URL route for the root of the web application
+# function to connect MySQL database
+def connect_to_database():
+    print('before connection to database')
+    try:
+        # Stroing the connection into a separate variable
+        # connect() function is used to establish a connection to a MySQL server using the following parameters:
+        connection = connect(
+            host='localhost',
+            port='3306',
+            user='root',
+            password='mahesh123',
+            database='flask'
+        )
+        print('connection established')
+        return connection
+    except Error as e:
+        print(e)
+        return e
+
+# Route Decorator
 @app.route('/')
-# Function declaration
+# Main API function
 def index():
-    return "Hello, World!"
+    cnx = connect_to_database()
+    # a cursor object is used to execute SQL commands on a MySQL database
+    cursor = cnx.cursor()
+    # cursor.execute() method is used to execute a SQL SELECT statement on the table 'employee'
+    cursor.execute('select * from employee')
+    # fetchall() is a method of a cursor object in python that is used to retrieve all the rows from the result set of a SQL query. It returns a list of tuples, where each tuple represents a row 
+    result = cursor.fetchall()
+    # retult = [ (row-1), (row-2), (row-3) ]
+    # returning the result in a string format
+    return str(result)
 
-
-@app.route('/admin')
-def admin():
-    return "Hello, Admin!"
-
-
-@app.route('/admin/<name>')
-def admin_name(name):
-    return f'Hello, {name}. You are an Admin'
-
-"""
-  This statement is used to check if the code is being executed as the main program or being imported as a module into another program. When the Python interpreter runs a script, it assigns the special variable __name__ the value __main__. If the source file is being imported into another script, __name__ will be set to the name of the module, not __main__. So, the if __name__ == '__main__': block is only executed if the script is run as the main program. This is useful for writing reusable code that can also be run as a standalone program.
-"""
 if __name__ == '__main__':
     app.run(debug=True)

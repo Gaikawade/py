@@ -7,32 +7,34 @@
         <title>Flask Login</title>
     </head>
     <body>
-        <h2>User Registration</h2>
-        <form action="{{url_for('register')}}" method="post">
+        <h2>User Login</h2>
+        <form action="{{url_for('login')}}" method="post">
             {% with messages = get_flashed_messages() %} {% if messages %} {%
             for message in messages %}
-            <div class="alert">{{ message }}</div>
+            <div>{{ message }}</div>
             {% endfor %} {% endif %} {% endwith %}
             <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" name="name" placeholder="Enter name" />
-            </div>
-            <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="text" name="email" placeholder="Enter email" />
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter Email"
+                />
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input
                     type="password"
+                    id="password"
                     name="password"
                     placeholder="Enter password"
                 />
             </div>
-            <button type="submit">Register</button>
+            <button type="submit">Login</button>
             <p>
-                Already have account?
-                <a href="{{url_for('login')}}">Login here</a>
+                Don't have account?
+                <a href="{{url_for('register')}}">Register here</a>
             </p>
         </form>
     </body>

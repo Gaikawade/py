@@ -33,6 +33,8 @@ def register():
             cursor.execute('INSERT INTO user VALUES ( %s, %s, %s)', (name, email, password,))
             mysql.connection.commit()
             flash('You have successfully registered!')
+            flash('Please login to access you account')
+            return redirect(url_for('login'))
     elif request.method == 'POST':
         flash('Please fill out the form !')
     return render_template("register.html")
@@ -49,24 +51,18 @@ def login():
             session['loggedin'] = True
             session['name'] = user['name']
             session['email'] = user['email']
-            print(session)
             
-            return 'Logged in successfully !'
+            return render_template('home.html')
         else:
-            return 'Please enter correct email / password!'
-    else:
-        return 'Please enter your credentials!'
+            flash('Please enter correct email / password!')
+    return render_template('login.html')
   
 @app.route('/logout')
 def logout():
-    if session.get('loggedin') == 'true':
-        session.pop('loggedin', None)
-        session.pop('name', None)
-        session.pop('email', None)
-        print(session)
-        return 'logged out'
-    else:
-        return 'You are not logged in'
+    session.pop('loggedin', None)
+    session.pop('name', None)
+    session.pop('email', None)
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

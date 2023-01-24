@@ -1,104 +1,52 @@
-from flask import Flask, flash, render_template, request, redirect, url_for, session
-# importing MySQL class from flask_mysqldb library
-from flask_mysqldb import MySQL
-# importing cursors module from MySQLdb library
-import MySQLdb.cursors
-# importing regular expressions(re) module
-import re
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
+import random
 
 app = Flask(__name__)
 
-'''
-When a user's session is created, a secure session cookie is created and sent to the user's browser.
-This cookie contains a session ID that is used to identify the user's session on the server.
-The app.secret_key is used to encrypt and sign the session cookie
-'''
-app.secret_key = 'xyzsdfg'
-# DB Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'mahesh123'
-app.config['MYSQL_DB'] = 'flask'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:mahesh123@localhost/flask'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-'''
-creating an instance of the MySQL class and assigns it to the variable "mysql"
-MySQL class is used to establish a connection to a MySQL database
-The "app" variable is an instance of a Flask application, allows the application to communicate with the MySQL database and perform various operations
-'''
-mysql = MySQL(app)
+db = SQLAlchemy(app)
 
-# User registration api
-@app.route('/register', methods =['GET', 'POST'])
-def register():
-    if request.method == 'POST' and 'name' in request.form and 'email' in request.form and 'password' in request.form :
-        # destructuring the request object
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        # A cursor is used to execute SQL commands and manage the results of the commands and returns the result in tuples
-        # The DictCursor allows the results to be accessed as a dictionary, rather than a tuple
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # Check whether user is already registered with the email address
-        cursor.execute('SELECT * FROM user WHERE email = %s', (email,))
-        account = cursor.fetchone()
-        # if the email is already registered "if-block" will execute
-        if account:
-            flash('Account already exists !')
-        # if not it will check the email address is in valid format
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            flash('Invalid email address !')
-        # if any input is missing this block will execute and send a message using flash() method
-        elif not name or not password or not email:
-            flash('Please fill out the form !')
-        # after validation we are inserting the data into our database in else block
-        else:
-            cursor.execute('INSERT INTO user VALUES ( %s, %s, %s)', (name, email, password,))
-            # commit() will commiting the current transaction to the MySQL database
-            mysql.connection.commit()
-            flash('You have successfully registered!')
-            flash('Please login to access you account')
-            return redirect(url_for('login'))
-    # if the method is POST and the request form is empty, this block will execute
-    elif request.method == 'POST':
-        flash('Please fill out the form !')
-    # rendering the register template
-    return render_template("register.html")
+class Customer(db.Model):
+    customer_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(20), nullable=False)
+    contact = db.Column(db.String(12), nullable=False)
 
-# Login api
-@app.route('/login', methods =['GET', 'POST'])
-def login():
-    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
-        email = request.form['email']
-        password = request.form['password']
-        # A cursor is used to execute SQL commands and manage the results of the commands and returns the result in tuples
-        # The DictCursor allows the results to be accessed as a dictionary, rather than a tuple
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # executing query 
-        cursor.execute('SELECT * FROM user WHERE email = %s AND password = %s', (email, password, ))
-        user = cursor.fetchone()
-        if user:
-            # storing the user details in the session
-            session['loggedin'] = True
-            session['name'] = user['name']
-            session['email'] = user['email']
-            # rendering the home template after successful login
-            return render_template('home.html')
-        else:
-            flash('Please enter correct email / password!')
-    # if the method is POST and the request form is empty, this block will execute
-    elif request.method == 'POST':
-        flash('Please fill out the form !')
-    return render_template('login.html')
+    def __init__(self, id, name, email, contact=None):
+        self.customer_id = id,
+        self.name = name,
+        self.email = email,
+        self.contact = contact
+        db.create_all()
 
-# Logout api
-@app.route('/logout')
-def logout():
-    # popping out all the details of the logged in user and redirecting back to login page
-    session.pop('loggedin', None)
-    session.pop('name', None)
-    session.pop('email', None)
-    return redirect(url_for('login'))
+# class Order(db.Model):
+#     order_id = db.Column(db.Integer, primary_key=True)
+#     customer_id = db.Column(db.Integer, db.ForeignKey('customers.customer_id'))
+#     order_date = db.Column(db.Date)
 
+@app.route('/')
+def index():
+    return 'Hello, are you ready to create schemas in MySQL?'
+
+@app.route('/create-customer', methods=['POST', 'GET'])
+def create_customer():
+    if request.method == 'POST':
+        data = request.get_json()
+        fixed_digits = 4
+        id = random.randrange(1000, 99999, fixed_digits)
+
+        doc = db.session.query(Customer).filter_by(email=data['email'])
+        if doc:
+            return 'Email is already in use'
+
+        new_customer = Customer(id=id, name=data['name'], email=data['email'], contact=data['contact'])
+        db.session.add(new_customer)
+        db.session.commit()
+        return 'Success', 201
 
 if __name__ == '__main__':
     app.run(debug=True)

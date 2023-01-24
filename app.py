@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, flash, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
@@ -24,17 +24,18 @@ def register():
         cursor.execute('SELECT * FROM user WHERE email = %s', (email,))
         account = cursor.fetchone()
         if account:
-            return 'Account already exists !'
+            flash('Account already exists !')
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            return 'Invalid email address !'
+            flash('Invalid email address !')
         elif not name or not password or not email:
-            return 'Please fill out the form !'
+            flash('Please fill out the form !')
         else:
             cursor.execute('INSERT INTO user VALUES ( %s, %s, %s)', (name, email, password,))
             mysql.connection.commit()
-            return 'You have successfully registered!'
+            flash('You have successfully registered!')
     elif request.method == 'POST':
-        return 'Please fill out the form !'
+        flash('Please fill out the form !')
+    return render_template("register.html")
 
 @app.route('/login', methods =['GET', 'POST'])
 def login():
